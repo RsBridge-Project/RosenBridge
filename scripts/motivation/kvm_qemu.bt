@@ -1,0 +1,15 @@
+#!/usr/bin/bpftrace
+
+kretprobe:__kvm_io_bus_write
+{
+    @t_start=nsecs;
+}
+
+uprobe:/home/RosenBridge/qemu/build/qemu-system-x86_64:virtio_blk_handle_output  
+/@t_start/
+{
+
+    @my_avg = avg(nsecs - @t_start);
+    @my_hist = lhist(nsecs - @t_start, 0, 10000, 200);
+    clear(@t_start);
+}

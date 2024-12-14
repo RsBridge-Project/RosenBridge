@@ -1,0 +1,16 @@
+#!/usr/bin/bpftrace
+
+uprobe:/home/RosenBridge/qemu/build/qemu-system-x86_64:virtio_blk_handle_output    
+/ pid == 5738 /
+{
+    @t_start[pid] = nsecs;
+}
+
+uprobe:/home/RosenBridge/qemu/build/qemu-system-x86_64:handle_aiocb_rw_linear
+/ @t_start[pid] /
+{
+    $latency = nsecs - @t_start[pid];
+    @my_avg = avg($latency);
+    @my_hist = lhist($latency, 0, 10000, 500);
+    delete(@t_start[pid]);
+}

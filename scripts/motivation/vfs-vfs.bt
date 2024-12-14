@@ -1,0 +1,17 @@
+#!/usr/bin/bpftrace
+
+kprobe:vfs_read
+/ pid == 5738 /
+{
+    @t_start[pid] = nsecs;
+}
+
+kretprobe:vfs_read
+/ @t_start[pid] /
+{
+
+    $latency = nsecs - @t_start[pid];
+    @my_avg = avg($latency);
+    @my_hist = lhist($latency, 0, 10000, 500);
+    delete(@t_start[pid]);
+}

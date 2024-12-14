@@ -1,0 +1,19 @@
+#!/usr/bin/bpftrace
+
+tracepoint:syscalls:sys_enter_pread64 
+/ pid == 5738 /
+{
+    @t_start[pid] = nsecs;
+}
+
+tracepoint:syscalls:sys_exit_pread64 
+/ @t_start[pid] /
+{
+    $latency = nsecs - @t_start[pid];
+    
+    @my_avg = avg($latency);
+    
+    @my_hist = lhist($latency, 0, 10000, 500);
+    
+    delete(@t_start[pid]);
+}

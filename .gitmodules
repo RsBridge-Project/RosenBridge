@@ -1,0 +1,15 @@
+[submodule "host"]
+	path = host
+	url = git@github.com:RsBridge-Project/host.git
+[submodule "guest"]
+	path = guest
+	url = git@github.com:RsBridge-Project/guest.git
+[submodule "qemu"]
+	path = qemu
+	url = git@github.com:RsBridge-Project/qemu.git
+[submodule "host-kernel"]
+	path = host-kernel
+	url = git@github.com:RsBridge-Project/host-kernel.git
+[submodule "guest-kernel"]
+	path = guest-kernel
+	url = git@github.com:RsBridge-Project/guest-kernel.git

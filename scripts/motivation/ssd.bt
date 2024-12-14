@@ -1,0 +1,15 @@
+#!/usr/bin/bpftrace
+
+kprobe:nvme_queue_rqs
+{
+    @t_start = nsecs;
+}
+
+kprobe:nvme_pci_complete_batch
+/ @t_start/
+{
+    $latency = nsecs - @t_start;
+    @my_avg = avg($latency);
+    @my_hist = lhist($latency, 0, 10000, 500);
+    delete(@t_start);
+}

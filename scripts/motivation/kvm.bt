@@ -1,0 +1,17 @@
+#!/usr/bin/bpftrace
+
+kprobe:vmx_handle_exit
+{
+    
+    @t_start[pid] = nsecs;
+
+}
+
+kprobe:__kvm_io_bus_write
+/@t_start[pid]/
+{
+
+    @my_avg = avg(nsecs - @t_start[pid]);
+    @my_hist = lhist(nsecs - @t_start[pid], 0, 10000, 500);
+    delete(@t_start[pid]);
+}

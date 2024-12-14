@@ -1,0 +1,16 @@
+#!/usr/bin/bpftrace
+
+uprobe:/home/RosenBridge/qemu/build/qemu-system-x86_64:handle_aiocb_rw_linear  
+/ pid == 5738 /
+{
+    @t_start = nsecs;
+}
+
+uretprobe:/home/RosenBridge/qemu/build/qemu-system-x86_64:handle_aiocb_rw_linear
+/ @t_start /
+{
+    $latency = nsecs - @t_start;
+    @my_avg = avg($latency);
+    @my_hist = lhist($latency, 10000, 30000, 500);
+    delete(@t_start);
+}
